@@ -1,0 +1,58 @@
+name: Secure DMS Backend CD
+
+on:
+  workflow_run:
+    workflows:
+      - Secure DMS CI
+    types:
+      - completed
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-backend:
+    name: Deploy Backend to Azure App Service
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Create deployment package
+        run: |
+          cd backend
+          zip -r ../backend-deploy.zip . \
+            -x "node_modules/*" \
+            -x ".env" \
+            -x "*.log"
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy backend to Azure App Service
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az webapp deploy \
+              --resource-group dms-capstone-rg \
+              --name dms-backend-appservice-hari \
+              --src-path backend-deploy.zip \
+              --type zip
