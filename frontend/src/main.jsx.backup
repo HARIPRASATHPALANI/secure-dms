@@ -1,0 +1,45 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { MsalProvider } from '@azure/msal-react';
+import App from './App.jsx';
+import './styles/index.css';
+import { msalInstance } from './services/msalConfig.js';
+import { setAuthToken } from './services/api.js';
+
+async function startApp() {
+  await msalInstance.initialize();
+
+  const loginResponse = await msalInstance.handleRedirectPromise();
+
+  if (loginResponse) {
+    const account = loginResponse.account;
+
+    msalInstance.setActiveAccount(account);
+
+    if (loginResponse.accessToken) {
+      setAuthToken(loginResponse.accessToken);
+    }
+
+    const user = {
+      username: account?.username,
+      name: account?.name || account?.username
+    };
+
+    localStorage.setItem('dms_user', JSON.stringify(user));
+
+    window.location.href = '/dashboard';
+    return;
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+      <MsalProvider instance={msalInstance}>
+        <App />
+      </MsalProvider>
+    </React.StrictMode>
+  );
+}
+
+startApp().catch((error) => {
+  console.error('MSAL initialization error:', error);
+});

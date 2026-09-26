@@ -1,0 +1,7 @@
+secure-dms-backup-2026-09-25.zip
+backend/.env
+frontend/.env
+node_modules/
+dist/
+*.log
+backend-deploy.zip
