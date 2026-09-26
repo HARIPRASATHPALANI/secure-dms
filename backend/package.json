@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "node --watch src/app.js",
-    "db:init": "node database/initDb.js"
+    "db:init": "node database/initDb.js",
+    "test": "node --test"
   },
   "dependencies": {
     "@azure/cosmos": "^4.10.1",
