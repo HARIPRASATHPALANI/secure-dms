@@ -1,5 +1,9 @@
 # Secure DMS Architecture
 
+## Architecture Diagram
+
+![Secure DMS Architecture](architecture.png)
+
 ## Overview
 
 Secure Digital Document Management Portal deployed on Microsoft Azure.
@@ -65,6 +69,7 @@ VNet: dms-vnet (10.0.0.0/16)
 - VNet integration
 - Cosmos DB public network access disabled
 - Cosmos DB Private Endpoint
+- Private DNS
 - Managed Identity
 - Azure Blob Storage public access disabled
 - Application Insights and Azure Monitor alerts
@@ -82,4 +87,5 @@ GitHub Actions is used for CI/CD.
 
 Bicep modules are maintained under `infra/`.
 
-The current Bicep implementation references the existing Azure infrastructure using `existing` resources to avoid modifying the running production environment.
+The current Bicep implementation is maintained as an
+infrastructure-as-code reference and validation layer for the deployed Azure environment.
