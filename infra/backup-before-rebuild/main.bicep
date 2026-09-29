@@ -6,7 +6,6 @@ param documentStorageName string = 'dmsdocuments2026hari'
 param cosmosAccountName string = 'dms-cosmos-2026-hari'
 param appServiceName string = 'dms-backend-appservice-hari'
 param appGatewayName string = 'dms-applicationgate'
-param privateEndpointName string = 'dms-cosmos-privateend'
 
 module networking './modules/networking.bicep' = {
   name: 'dms-networking'
@@ -27,16 +26,6 @@ module cosmos './modules/cosmos.bicep' = {
   name: 'dms-cosmos'
   params: {
     cosmosAccountName: cosmosAccountName
-    appServicePrincipalId: appservice.outputs.appServicePrincipalId
-  }
-}
-
-module privateEndpoint './modules/private-endpoint.bicep' = {
-  name: 'dms-private-endpoint'
-  params: {
-    privateEndpointName: privateEndpointName
-    cosmosAccountName: cosmosAccountName
-    vnetName: vnetName
   }
 }
 
@@ -44,7 +33,6 @@ module appservice './modules/appservice.bicep' = {
   name: 'dms-appservice'
   params: {
     appServiceName: appServiceName
-    vnetName: vnetName
   }
 }
 
@@ -52,21 +40,5 @@ module appgateway './modules/appgateway.bicep' = {
   name: 'dms-appgateway'
   params: {
     appGatewayName: appGatewayName
-    vnetName: vnetName
-  }
-}
-
-module dns './modules/dns.bicep' = {
-  name: 'dms-dns'
-  params: {
-    appGatewayPublicIpName: 'dms-appgw-public-ip'
-  }
-}
-
-module monitoring './modules/monitoring.bicep' = {
-  name: 'dms-monitoring'
-  params: {
-    appServiceName: appServiceName
-    cosmosAccountName: cosmosAccountName
   }
 }
